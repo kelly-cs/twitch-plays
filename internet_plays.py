@@ -409,7 +409,7 @@ def handle_action_command(button, j, **kwargs):
             return shoot_long_duration
         else:
             j.set_button(acceptable_commands[button], 1) # press the right button
-            return press_duration
+            return tap_duration
     else:
         return 0
 
