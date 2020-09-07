@@ -124,13 +124,13 @@ def reset_function(button, j):
     button_to_reset = button.strip() # whitespace might be messing this up
     try:
         print("resetting " + button)
-        if button == "a" or button == "aa" or button == "aaa" or button == "d" or button == "dd" or button == "ddd":
+        if button == "a" or button == "aa" or button == "aaa" or button == "aaaa" or button == "d" or button == "dd" or button == "ddd" or button == "dddd":
             button_to_reset = "xrot"
-        elif button == "w" or button == "ww" or button == "www" or button == "s" or button == "ss" or button == "sss":
+        elif button == "w" or button == "ww" or button == "www" or button == "wwww" or button == "s" or button == "ss" or button == "sss" or button == "ssss":
             button_to_reset = "yrot"
-        elif button == "j" or button == "jj" or button == "jjj" or button == "l" or button == "ll" or button == "lll":
+        elif button == "j" or button == "jj" or button == "jjj" or button == "jjjj" or button == "l" or button == "ll" or button == "lll" or button == "llll":
             button_to_reset = "x"
-        elif button == "i" or button == "ii" or button == "iii" or button == "k" or button == "kk" or button == "kkk":
+        elif button == "i" or button == "ii" or button == "iii" or button == "iiii" or button == "k" or button == "kk" or button == "kkk" or button == "kkkk":
             button_to_reset = "y"
 
         elif button_to_reset == None:
@@ -534,8 +534,7 @@ async def listen_to_chat():
     twitch_sock.close()
 
 
-if __name__ == "__main__":
-    # try loading a refresh/intial token locally first:
+if __name__ == "__main__": # try loading a refresh/intial token locally first:
     loop = asyncio.get_event_loop()
     loop.run_until_complete(listen_to_chat()) #twitch
     loop.close()
