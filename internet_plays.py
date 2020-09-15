@@ -33,7 +33,7 @@ TWITCH_PORT = 6667
 
 # acceptable commands get routed to X360CE emulator
 j = pyvjoy.VJoyDevice(1)
-time_between_requests = 300
+socket_timeout = 120
 directory = os.path.dirname(__file__)
 command_queue = [] # list of commands extracted from chat
 acceptable_commands = {
@@ -448,12 +448,10 @@ async def listen_to_chat():
     movement_semaphore = threading.BoundedSemaphore(max_move_commands)
     action_lock = threading.Lock() # only 1 action at a time
     vjoy_lock = threading.Lock() # only 1 thing can update vjoy, add/remove at a time.
-    tasks = [] # list of tasks being performed, in lists ["w", 0.01] where num is time remaining before reset is issued.
+    tasks = {} # list of tasks being performed, in dicts ["w" : timer] where num is time remaining before reset is issued
     currently_listening = True
     start_time = time.time()
-    refresh_time = time.time() + time_between_requests
     last_command_time = time.time()
-    print("start listening: " + str(start_time) + " | end time: " + str(refresh_time))
     twitch_sock = socket.socket()
     twitch_sock.connect((TWITCH_SERVER, TWITCH_PORT))
     twitch_sock.send(f"PASS {OAUTH_TOKEN}\n".encode("utf-8"))
@@ -479,8 +477,13 @@ async def listen_to_chat():
                         timestart = time.time()
                         time_to_wait_in_secs = handle_aim_command(command,j)
                         if time_to_wait_in_secs > 0:
+                            if command in tasks: # if it's already running, make a new one
+                                tasks[command].cancel()
+                            # always create a new timer, whether or not it had to cancel an existing command's timer
                             timer = threading.Timer(time_to_wait_in_secs, reset_completed_commands, args=[command])
-                            timer.start()
+                            tasks[command] = timer
+                            tasks[command].start()
+
                     except:
                         print("something tried to access vjoy at the same time. IGNORE..")
                         pass
@@ -498,8 +501,12 @@ async def listen_to_chat():
                         timestart = time.time()
                         time_to_wait_in_secs = handle_move_command(command,j)
                         if time_to_wait_in_secs > 0:
-                            timer = threading.Timer(time_to_wait_in_secs, reset_completed_commands,args=[command])
-                            timer.start()
+                            if command in tasks: # if it's already running, make a new one
+                                tasks[command].cancel()
+                            # always create a new timer, whether or not it had to cancel an existing command's timer
+                            timer = threading.Timer(time_to_wait_in_secs, reset_completed_commands, args=[command])
+                            tasks[command] = timer
+                            tasks[command].start()
                     except:
                         print("something tried to access vjoy at the same time. IGNORE..")
                         pass
@@ -518,8 +525,12 @@ async def listen_to_chat():
                         timestart = time.time()
                         time_to_wait_in_secs = handle_action_command(command,j)
                         if time_to_wait_in_secs > 0:
-                            timer = threading.Timer(time_to_wait_in_secs, reset_completed_commands,args=[command])
-                            timer.start()
+                            if command in tasks: # if it's already running, make a new one
+                                tasks[command].cancel()
+                            # always create a new timer, whether or not it had to cancel an existing command's timer
+                            timer = threading.Timer(time_to_wait_in_secs, reset_completed_commands, args=[command])
+                            tasks[command] = timer
+                            tasks[command].start()
                     except:
                         print("something tried to access vjoy at the same time. IGNORE..")
                         pass
