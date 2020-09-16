@@ -504,7 +504,7 @@ async def listen_to_chat():
                         timestart = time.time()
                         time_to_wait_in_secs = handle_move_command(command,j)
                         if time_to_wait_in_secs > 0:
-                            if command in tasks: # if it's already running, make a new one
+                            if command in tasks: # if it's already running, make a new one - TODO: THJIS WILL RUN EVERY TIME, WE DON'T DELETE IT FROM THE DICT
                                 tasks[command].cancel()
                             # always create a new timer, whether or not it had to cancel an existing command's timer
                             timer = threading.Timer(time_to_wait_in_secs, reset_completed_commands, args=[command])
