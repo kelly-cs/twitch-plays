@@ -398,7 +398,7 @@ def handle_action_command(button, j, **kwargs):
     print(kwargs)
     if button in acceptable_commands:
         print("handling action: " + button)
-        if button == "shoot":
+        if button == "shoot" or button == "shootleft":
             j.set_button(acceptable_commands[button], 1) # press the right button
             return shoot_duration
         elif button == "crouch" or button == "aim" or button == "swap" or button == "swapweapon" or button == "reload" or button == "r" or button == "reloadleft" or button == "melee":
